@@ -1,0 +1,47 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "LangChain Agent for GPT",
+    "version": "1.0.0",
+    "description": "Fetches templates, code snippets, and dev resources from the web for use in custom website builds."
+  },
+  "paths": {
+    "/fetch": {
+      "get": {
+        "summary": "Fetch web template or code snippet",
+        "operationId": "fetchTemplate",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search term or query for the code/template",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A matching result was found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "title": { "type": "string" },
+                    "snippet": { "type": "string" },
+                    "url": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No result found"
+          }
+        }
+      }
+    }
+  }
+}
