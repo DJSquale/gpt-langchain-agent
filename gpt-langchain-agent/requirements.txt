@@ -1,8 +1,0 @@
-langchain
-langchain-community
-openai
-requests
-beautifulsoup4
-fastapi
-uvicorn
-pydantic

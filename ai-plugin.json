@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "Template Fetcher",
+  "name_for_model": "fetchWebTemplate",
+  "description_for_human": "Fetch web templates or UI components by description from sources like CodePen or GitHub.",
+  "description_for_model": "Retrieves HTML/CSS/JS templates or snippets based on user description from dev sources.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost/openapi.yaml",
+    "has_user_authentication": false
+  },
+  "logo_url": "https://example.com/logo.png",
+  "contact_email": "you@example.com",
+  "legal_info_url": "https://example.com/legal"
+}

@@ -1,0 +1,49 @@
+
+openapi: 3.0.1
+info:
+  title: Template Fetcher API
+  description: API to fetch web templates or code snippets based on user query
+  version: '1.0'
+servers:
+  - url: https://example.com/api
+paths:
+  /fetch-template:
+    post:
+      summary: Fetch a web template or code snippet
+      operationId: fetchWebTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  description: Description of the desired component or template
+                category:
+                  type: string
+                  enum: [layout, form, navbar, hero, footer, embed, gallery, animation, button, custom]
+                  description: The general type of template being requested
+                preferred_sources:
+                  type: array
+                  items:
+                    type: string
+                    enum: [CodePen, GitHub, MDN, web.dev, TailwindUI, Bootstrap, CustomRepo]
+                  description: List of preferred developer sources to fetch from
+      responses:
+        '200':
+          description: Successfully fetched template or snippet
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  html:
+                    type: string
+                    description: Raw HTML/CSS/JS of the template
+                  source_url:
+                    type: string
+                    description: Source URL where the template was found
