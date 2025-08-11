@@ -4,20 +4,22 @@ dotenv.config();
 import express from "express";
 import { getJson } from "serpapi";
 import * as cheerio from "cheerio";
+import { readFile } from "node:fs/promises";
 
 const app = express();
 app.use(express.json());
 
-// normalize accidental double slashes like //fetchCode
+// Normalize accidental double slashes like //fetchCode
 app.use((req, _res, next) => {
   if (req.url.includes("//")) req.url = req.url.replace(/\/{2,}/g, "/");
   next();
 });
 
-// cold-start gate: return 503 with Retry-After for first 2 minutes after boot
+// 2-minute cold-start gate, but DO NOT block health/privacy
 const bootAt = Date.now();
 const warmupMs = 120000; // 2 minutes
 app.use((req, res, next) => {
+  if (req.path === "/healthCheck" || req.path === "/privacy") return next();
   const left = warmupMs - (Date.now() - bootAt);
   if (left > 0) {
     const retry = Math.ceil(left / 1000);
@@ -27,14 +29,27 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check (always available)
 app.get("/healthCheck", (_req, res) => res.json({ status: "ok" }));
 
+// Serve privacy page from repo root
+app.get("/privacy", async (_req, res) => {
+  try {
+    const html = await readFile(new URL("./privacy.html", import.meta.url), "utf8");
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    res.send(html);
+  } catch {
+    res.status(500).send("Privacy page not found");
+  }
+});
+
+// Main action endpoint
 app.post("/fetchCode", async (req, res) => {
   try {
     const { query } = req.body || {};
     if (!query) return res.status(400).json({ error: "Missing query" });
 
-    // 1) search
+    // 1) Search
     const serp = await getJson({
       engine: "google",
       q: query,
@@ -44,7 +59,7 @@ app.post("/fetchCode", async (req, res) => {
       gl: "us"
     });
 
-    // 2) try first few results for code
+    // 2) Try first few results for code
     const candidates = [
       serp?.answer_box?.link,
       ...(serp?.organic_results ?? []).map(r => r?.link)
