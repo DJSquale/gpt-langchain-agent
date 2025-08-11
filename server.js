@@ -9,6 +9,19 @@ import bodyParser from "body-parser";
 import { getJson } from "serpapi";
 import * as cheerio from "cheerio";
 
+import { readFileSync } from "fs";
+import { join } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+
+app.get("/privacy", (_req, res) => {
+  const html = readFileSync(join(__dirname, "privacy.html"), "utf8");
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  res.send(html);
+});
+
+
 // Optional: sanity log
 console.log("Loaded SerpAPI key?", process.env.SERPAPI_API_KEY ? "YES" : "NO");
 
